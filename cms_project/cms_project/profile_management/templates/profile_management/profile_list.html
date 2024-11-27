@@ -1,0 +1,12 @@
+{% extends "profile_management/base.html" %}
+
+{% block title %}Profile List{% endblock %}
+
+{% block content %}
+    <h2>Profile List</h2>
+    <ul>
+        {% for profile in profiles %}
+            <li><a href="{% url 'profile_management:profile_detail' profile.id %}">{{ profile.user.username }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

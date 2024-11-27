@@ -1,0 +1,31 @@
+{% extends 'validation_app/base.html' %}
+ {# {% load get_item %} #}
+
+{% block content %}
+<h1>Source vs Target Validation</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Validate">
+</form>
+
+{% if analytics %}
+        <h2>Analytics Report</h2>
+        <p><strong>Source Row Count:</strong> {{ analytics.row_count.source }}</p>
+        <p><strong>Target Row Count:</strong> {{ analytics.row_count.target }}</p>
+        <p><strong>Matched Row Count:</strong> {{ analytics.row_count.matched }}</p>
+        <p><strong>Unmatched Rows in Source:</strong> {{ analytics.row_count.unmatched_source }}</p>
+        <p><strong>Unmatched Rows in Target:</strong> {{ analytics.row_count.unmatched_target }}</p>
+
+        <h3>Matched Records</h3>
+        {{ analytics.matched_records.to_html|safe }}
+
+        <h3>Unmatched Source Records</h3>
+        {{ analytics.unmatched_source.to_html|safe }}
+
+        <h3>Unmatched Target Records</h3>
+        {{ analytics.unmatched_target.to_html|safe }}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'validation_app/base.html' %}
+ {# {% load get_item %} #}
+
+{% block content %}
+<h1>Execute SQL Query</h1>
+<form method="post" class="mt-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Run Query</button>
+</form>
+
+{% if error %}
+<div class="alert alert-danger mt-4">
+    <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+{% if results %}
+<h2 class="mt-4">Results </h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            
+            {% for column in columns %}
+            <th>{{ column }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in results %}
+        <tr>
+            {% for cell in row %}
+            <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<h3 class="mt-4">Analytics</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Column</th>
+            <th>Null Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for column, stats in analytics.items %}
+            {% if column != 'total_rows' %}
+                <tr>
+                    <td>{{ column }}</td>
+                    <td>{{ stats.null_count }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        <tr>
+            <td><strong>Total Rows</strong></td>
+            <td>{{ analytics.total_rows }}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

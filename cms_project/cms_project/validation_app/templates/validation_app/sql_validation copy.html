@@ -1,0 +1,47 @@
+{% extends 'validation_app/base.html' %}
+ {# {% load get_item %} #}
+
+{% block content %}
+<h1>Source vs Target Validation</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Validate">
+</form>
+
+{% if analytics %}
+    <h2>Validation Results</h2>
+
+    <h3>Row Count</h3>
+    <p>Source: {{ analytics.row_count.source }}</p>
+    <p>Target: {{ analytics.row_count.target }}</p>
+    <p>Match: {{ analytics.row_count.match }}</p>
+
+    <h3>Missing Records</h3>
+    <h4>Missing in Source:</h4>
+    <pre>{{ analytics.missing_records.source }}</pre>
+    <h4>Missing in Target:</h4>
+    <pre>{{ analytics.missing_records.target }}</pre>
+
+    <h3>Column-Level Mismatches</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Mismatch Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for column, mismatches in analytics.column_mismatches.items %}
+                <tr>
+                    <td>{{ column }}</td>
+                    <td><pre>{{ mismatches }}</pre></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PySpark Data ProcessingResults</title>
+</head>
+<body> 
+    <h1>PySpark Data ProcessingResults</h1>
+    {{sparkdisplay}}
+    {{result_list}}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>title</th>
+                <th>content</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in result_list %}
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.title }}</td>
+                    <td>{{ row.content }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

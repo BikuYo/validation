@@ -1,0 +1,81 @@
+{% extends 'validation_app/base.html' %}
+ {# {% load get_item %} #}
+
+{% block content %}
+<h1>Execute SQL Query</h1>
+
+<form method="post" action="{% url 'execute_sql_with_join_type' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Execute Query</button>
+</form>
+
+{% if error %} cc
+    <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+{% if columns %}
+    <h2>Query Results</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                {% for column in columns %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in results %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+
+{% if analytics %}
+    <h3>Analytics Report</h3>
+    <p><strong>Total Rows:</strong> {{ analytics.Total_Rows }}</p>
+
+    <h4>Null Counts</h4>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>Null Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for column, count in analytics.Null_Counts.items %}
+          <tr>
+            <td>{{ column }}</td>
+            <td>{{ count }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h4>Missing Records</h4>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>Missing Record Information</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for column, missing_info in analytics.Missing_Records.items %}
+          <tr>
+            <td>{{ column }}</td>
+            <td>{{ missing_info }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}
+
