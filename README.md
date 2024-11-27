@@ -6,7 +6,7 @@
 6. pip install virtualenv
 7. virtualenv venv   # creat venv in root folder of your main dir
 8. venv\Scripts\activate   # for windows user
-9. source myenv/bin/activate  #mac or linux user
+9. source venv/bin/activate  #mac or linux user
 10. pip install -r ../requirements.txt   # for installing all dependencies
 11. cd cms_project  # move your cmd to actual project folder
 12. python manage.py makemigrations
