@@ -26,10 +26,65 @@ from django.http import JsonResponse
 import os
 import sys  # Import sys module to access Python version
 
+from dotenv import load_dotenv
+load_dotenv()
+
+import openai
+
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 # Initialize PySpark session
 spark = SparkSession.builder.appName('SourceTargetValidation').getOrCreate()
+
+
+########################################
+
+# from langchain_core.prompts import PromptTemplate
+# from langchain.chains import LLMChain
+
+# from langchain.chains import TransformChain
+# from langchain.prompts import PromptTemplate
+# from langchain.llms.fake import FakeListLLM
+# from langchain.schema import Document
+# import sqlparse
+
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
+
+from transformers import pipeline  # Hugging Face's pipeline for model usage
+
+
+
+def format_sql_with_huggingface(unformatted_sql: str):
+    # Load the Hugging Face model using the transformers library
+    nlp_pipeline = pipeline('text2text-generation', model="EleutherAI/gpt-neo-1.3B")  # You can choose another model like T5
+    
+    # Format the SQL query using the model
+    formatted_sql = nlp_pipeline(f"Format the following SQL query into a clean, properly indented version:\n\n{unformatted_sql}")
+    
+    # Extract the generated text from the output
+    return formatted_sql[0]['generated_text']
+
+def sql_formatter_view(request):
+    formatted_sql = ''
+    
+    if request.method == 'POST':
+        # Get unformatted SQL query from the form
+        unformatted_sql = request.POST.get('unformatted_sql', '').strip()
+        
+        if unformatted_sql:
+            # Format the SQL query using Langchain's processing function
+            formatted_sql = format_sql_with_huggingface(unformatted_sql)
+
+    return render(request, 'validation_app/sql_formatter.html', {'formatted_sql': formatted_sql})
+
+
+
+
+
+############################################
 
 def get_spark_session():
     spark = (SparkSession
@@ -142,8 +197,55 @@ def sql_validation_view(request):
     else:
         form = SQLValidationForm()
 
-    return render(request, 'validation_app/sql_validation.html', {'form': form, 'analytics': analytics})
+    api_key = openai.api_key  # Fetch the API key
+    return render(request, 'validation_app/sql_validation.html', {'form': form, 'analytics': analytics,'api_key': api_key})
 
+
+
+def generate_sql_open_ai(request):
+    if request.method == "POST":
+        user_input = request.POST.get("user_input")
+
+        try:
+            # Correct API call for openai>=1.0.0
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",  # Or "gpt-4" if you prefer
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant for generating SQL queries."},
+                    {"role": "user", "content": f"Generate an SQL query for: {user_input}"}
+                ],
+                max_tokens=150,
+                temperature=0.7
+            )
+            generated_sql = response['choices'][0]['message']['content'].strip()
+
+        except Exception as e:
+            generated_sql = f"Error generating SQL: {e}"
+
+        return JsonResponse({"generated_sql": generated_sql})
+    return render(request, "validation_app/generate_sql_open_ai.html")
+
+
+
+def generate_sql_open_ai_xx(request):
+    if request.method == "POST":
+        user_input = request.POST.get("user_input")
+
+        try:
+            # Call the API using the new syntax
+            response = openai.chat.completions.create(
+                model="gpt-3.5-turbo",  # Or "gpt-3.5-turbo" if you prefer
+                prompt=f"Generate an SQL query for: {user_input}",
+                max_tokens=150,
+                temperature=0.7
+            )
+            generated_sql = response['choices'][0]['text'].strip()
+
+        except Exception as e:
+            generated_sql = f"Error generating SQL: {e}"
+
+        return JsonResponse({"generated_sql": generated_sql})
+    return render(request, "validation_app/generate_sql_open_ai.html")
 
 
 # ####################################################################

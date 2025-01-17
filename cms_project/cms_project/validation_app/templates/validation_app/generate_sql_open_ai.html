@@ -1,0 +1,30 @@
+{% extends 'validation_app/base.html' %}
+ {# {% load get_item %} #}
+
+{% block content %}
+<h1>Source vs Target Validation 1</h1>
+
+    <form id="sqlForm" method="post" action="{% url 'generate_sql_open_ai' %}">
+        {% csrf_token %}
+        <textarea name="user_input" placeholder="Describe what you need in SQL" rows="4" cols="50"></textarea><br><br>
+        <button type="submit">Generate SQL</button>
+    </form>
+    <h2>Generated SQL:</h2>
+    <pre id="sqlOutput"></pre>
+
+    <script>
+        document.getElementById("sqlForm").onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch(this.action, {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            document.getElementById("sqlOutput").textContent = data.generated_sql;
+        };
+    </script>
+
+
+
+{% endblock %}

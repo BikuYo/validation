@@ -2,8 +2,8 @@
  {# {% load get_item %} #}
 
 {% block content %}
-<h1>Source vs Target Validation</h1>
-
+<h1>Source vs Target Validation 1</h1>
+{{api_key}}
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}

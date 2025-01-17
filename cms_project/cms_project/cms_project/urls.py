@@ -18,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from validation_app.views import execute_sql_query, validation_type,mapping,result, \
-execute_sql_with_join_type,sql_validation_view,sparkdataProcessing
+execute_sql_with_join_type,sql_validation_view,sparkdataProcessing,generate_sql_open_ai,sql_formatter_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,4 +32,7 @@ urlpatterns = [
     path('result/', result, name='result'),
     path('sql_validation_view/', sql_validation_view, name='sql_validation_view'),
     path('sparkdataProcessing/', sparkdataProcessing, name='sparkdataProcessing'),
+    path('generate_sql_open_ai/', generate_sql_open_ai, name='generate_sql_open_ai'),
+    path('sql_formatter_view/', sql_formatter_view, name='sql_formatter_view'),
 ]
+
